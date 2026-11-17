@@ -1,0 +1,5 @@
+1. Crea una clase que implemente la interface IGenerator y genere el listado de números de manera aleatoria. El constructor debe recibir la cantidad de números a generar, por defecto 10
+2. Cambia el nombre de la carpeta con las implementaciones a implementations, con i minúscula y modifica el archivo de instrucciones para que las implementaciones se creen siempre en esta nueva carpeta 
+3. Crea una clase que implemente ISave, llama a la clase PipeSave. Su funcionalidad será guardar el listado de su contenido en un archivo separado por Pipes. Crea la clase en una carpeta llamada Savers
+4. Mueve la carpeta Savers dentro de implementations, ya te dije que todas las implementaciones irían dentro de dicha carpeta
+5. Crea una carpeta Generators dentro de la carpeta implementations y mueve el fichero RandomGenerator.cs dentro de la nueva carpeta

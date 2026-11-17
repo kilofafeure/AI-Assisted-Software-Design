@@ -1,0 +1,1 @@
+1. Usa inyección de dependencias. Instala la biblioteca por defecto de .NET para est. Realiza solo la acci´pon de inyectar la interface IGenerator con su implementación RandomNumberGenerator, la interface ISave con su implementación PipeSave y el caso de uso NumberUseCase

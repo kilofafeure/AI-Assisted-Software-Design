@@ -1,0 +1,1 @@
+1. Crea una clase que sirva de orquestador de funcionamiento de IGenerator y de ISave donde se ejecute primero el método de IGenerator dando su resultado como entrada al método de ISave, llama a esta NumberUseCase. Créala dentro de la carpeta useCases

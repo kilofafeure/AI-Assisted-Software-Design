@@ -1,0 +1,4 @@
+1. Crea una implementación de IGenerator donde se generen números primos. El constructor debe recibir la cantidad a generar (por defecto 10). La clase llámala PrimeNumberGenerator
+2. Crea una implemetación de ISave. El guardado debe hacerse en un archivo con formato JSON, el path del archivo a generar debe recibirlo en el constructor, la clase llámala JSONSave
+3. Cambia la implementación de IGenerator e ISave por las nuevas clases creadas PrimeNumberGenerator y JSONSave
+4. En los cambios realizados en Program.cs no borres las viejas configuraciones, déjalas comentadas
