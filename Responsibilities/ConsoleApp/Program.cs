@@ -9,7 +9,7 @@ var services = new ServiceCollection();
 services.AddSingleton<ItemMemoryRepository>();
 services.AddSingleton<IGet>(provider => provider.GetRequiredService<ItemMemoryRepository>());
 services.AddSingleton<ISave>(provider => provider.GetRequiredService<ItemMemoryRepository>());
-services.AddSingleton<IQueue, ConsoleQueue>();
+services.AddSingleton<IQueue, TaskProcessQueue>();
 services.AddTransient<GetUseCase>();
 services.AddTransient<SaveUseCase>();
 

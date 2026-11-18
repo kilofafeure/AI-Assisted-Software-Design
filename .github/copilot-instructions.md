@@ -28,5 +28,5 @@ dotnet run --project "Interfaces\FileGenerator\FileGenerator.csproj"
 - `TaskItem` enforces its invariants in property setters: `Id` cannot be empty, `Name` cannot be blank and is limited to 50 characters, `Data` cannot be blank, and `Type` must be a defined `TaskType`. `TaskType` currently contains only `HTTP`; preserve these domain rules when changing the entity.
 - Application ports use `Task`-based signatures. Use cases expose `ExecuteAsync`; `SaveUseCase` preserves the save-then-enqueue order.
 - `ConsoleApp/Program.cs` is the Tasks composition root. `ItemMemoryRepository` is registered once as a singleton and exposed as both `IGet` and `ISave`, so both ports share the same in-memory list. Keep that shared instance when changing registrations.
-- The in-memory repository protects its list with a lock and returns a list copy from `Get`; `ConsoleQueue` writes only `TaskItem.Data` to the console.
+- The in-memory repository protects its list with a lock and returns a list copy from `Get`; `TaskProcessQueue` performs an HTTP GET for `TaskType.HTTP` using the URL in `TaskItem.Data` and prints the response status code.
 - Existing source folders use lowercase or mixed-case names such as `interface`, `useCases`, `interfaces`, and `implementations`. Preserve the casing and project-local structure when adding related files.

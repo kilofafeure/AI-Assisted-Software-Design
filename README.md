@@ -33,14 +33,14 @@ La solución `Responsibilities/Tasks.slnx` separa el dominio, los casos de uso y
 | `Domain` | Define `TaskItem` con `Guid Id`, `string Name`, `bool Status`, `string Data` y `TaskType Type`. Los setters validan que `Id` no sea `Guid.Empty`, que `Name` y `Data` no estén vacíos, que `Name` no supere los 50 caracteres y que `Type` sea un valor definido. Actualmente `TaskType` solo contiene `HTTP`. |
 | `ApplicationLayer` | Define `ISave.Save(TaskItem)`, `IGet.Get()` e `IQueue.EnqueueAsync(TaskItem)`, todos con contratos basados en `Task`, además de los casos de uso `SaveUseCase` y `GetUseCase`. |
 | `Data` | Implementa `ISave` e `IGet` en `ItemMemoryRepository`, que guarda tareas en una lista en memoria y devuelve una copia de la lista al consultar. |
-| `ProcessQueue` | Implementa `IQueue` en `ConsoleQueue`, que escribe en consola el valor de `TaskItem.Data`. |
+| `ProcessQueue` | Implementa `IQueue` en `TaskProcessQueue`. Para `TaskType.HTTP`, realiza una solicitud GET a la URL absoluta HTTP/HTTPS indicada en `TaskItem.Data` e imprime el código de estado recibido; los tipos no compatibles producen `NotSupportedException`. |
 | `ConsoleApp` | Es el punto de composición: registra las implementaciones y los casos de uso mediante inyección de dependencias, y proporciona el menú interactivo. |
 
 `SaveUseCase` guarda primero la tarea y después la envía a la cola; `GetUseCase` delega la consulta a `IGet`. En `ConsoleApp`, `ItemMemoryRepository` se registra como una única instancia compartida por `IGet` e `ISave`, para que las tareas guardadas puedan consultarse durante la ejecución.
 
 El menú de `ConsoleApp` ofrece estas opciones:
 
-1. Crear una tarea solicitando nombre, datos y estado (`true` o `false`). La aplicación genera el `Guid`, asigna `TaskType.HTTP` y ejecuta `SaveUseCase`.
+1. Crear una tarea solicitando nombre, datos y estado (`true` o `false`). La aplicación genera el `Guid`, asigna `TaskType.HTTP` y ejecuta `SaveUseCase`, que guarda la tarea y después solicita la URL indicada en `Data` mediante GET.
 2. Mostrar las tareas guardadas con su nombre y estado.
 3. Salir.
 
