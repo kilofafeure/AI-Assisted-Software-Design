@@ -51,11 +51,7 @@ public class TaskItem
         get => _data;
         set
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentException("Data no puede estar vacío.", nameof(Data));
-            }
-
+            ArgumentNullException.ThrowIfNull(value);
             _data = value;
         }
     }

@@ -7,9 +7,9 @@ public class SaveUseCase(ISave save, IQueue queue)
     private readonly ISave _save = save ?? throw new ArgumentNullException(nameof(save));
     private readonly IQueue _queue = queue ?? throw new ArgumentNullException(nameof(queue));
 
-    public async Task ExecuteAsync(TaskItem taskItem)
+    public async Task<bool> ExecuteAsync(TaskItem taskItem)
     {
         await _save.Save(taskItem);
-        await _queue.EnqueueAsync(taskItem);
+        return await _queue.EnqueueAsync(taskItem);
     }
 }

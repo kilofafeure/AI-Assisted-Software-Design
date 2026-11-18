@@ -1,0 +1,3 @@
+1. Analiza sin modificar que involucra cambiar la interface IQueue a que su respuesta sea Task<bool. Identifica los archivos a modificar e indica que cambios harías para seguir respetando la implementacion
+2. De momento haz la modificacion en la interface y en quien la implementa, pero no en el caso de uso
+3. En el caso de uso modifica que si el método EnqueueAsync es true se cambie el status del item a true y se invoque el método Save nuevamente. Por lo tanto en el ConsoleApp no pidas el valor para el Status y por defecto ponlo a false

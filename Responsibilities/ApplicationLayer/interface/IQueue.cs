@@ -4,5 +4,8 @@ namespace ApplicationLayer;
 
 public interface IQueue
 {
-    Task EnqueueAsync(TaskItem taskItem);
+    /// <summary>
+    /// Enqueues the item. The result indicates acceptance, not processing success.
+    /// </summary>
+    Task<bool> EnqueueAsync(TaskItem taskItem);
 }

@@ -13,7 +13,7 @@ services.AddSingleton<IQueue, TaskProcessQueue>();
 services.AddTransient<GetUseCase>();
 services.AddTransient<SaveUseCase>();
 
-using var serviceProvider = services.BuildServiceProvider();
+await using var serviceProvider = services.BuildServiceProvider();
 var saveUseCase = serviceProvider.GetRequiredService<SaveUseCase>();
 var getUseCase = serviceProvider.GetRequiredService<GetUseCase>();
 
@@ -60,14 +60,6 @@ async Task CreateTaskAsync()
         return;
     }
 
-    Console.Write("Status (true/false): ");
-    var statusInput = Console.ReadLine();
-    if (!bool.TryParse(statusInput, out var status))
-    {
-        Console.WriteLine("Status debe ser true o false.");
-        return;
-    }
-
     TaskItem taskItem;
     try
     {
@@ -75,7 +67,7 @@ async Task CreateTaskAsync()
         {
             Id = Guid.NewGuid(),
             Name = name,
-            Status = status,
+            Status = false,
             Data = data,
             Type = TaskType.HTTP
         };
@@ -86,8 +78,10 @@ async Task CreateTaskAsync()
         return;
     }
 
-    await saveUseCase.ExecuteAsync(taskItem);
-    Console.WriteLine("Tarea guardada.");
+    var enqueued = await saveUseCase.ExecuteAsync(taskItem);
+    Console.WriteLine(enqueued
+        ? "Tarea guardada y encolada para procesarse."
+        : "Tarea guardada, pero no se pudo encolar.");
 }
 
 async Task ShowTasksAsync()

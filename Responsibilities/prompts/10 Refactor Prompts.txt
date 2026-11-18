@@ -1,0 +1,3 @@
+1. Al crear una tarea y fallar porque el usuario no ha informado un Data correcto, estás lanzando una excepción pero necesito que no se acabe el programa y que guarde la tarea como incorrecta
+2. El TaskProcessQueue no funciona como una cola de procesos, analiza que involucraría cambiarlo a Channels para que funcione en segundo plano. Lista los archivos a modificar y muestrame que codigo cambiaría. No modifiques nada. Contempla que el Channel exista dentro de TaskProcessQueue
+3. Ipmplementa los cambios

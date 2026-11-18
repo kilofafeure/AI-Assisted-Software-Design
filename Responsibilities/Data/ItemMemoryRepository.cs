@@ -16,7 +16,15 @@ public class ItemMemoryRepository : ISave, IGet
 
         lock (_syncRoot)
         {
-            _items.Add(taskItem);
+            var existingIndex = _items.FindIndex(item => item.Id == taskItem.Id);
+            if (existingIndex >= 0)
+            {
+                _items[existingIndex] = taskItem;
+            }
+            else
+            {
+                _items.Add(taskItem);
+            }
         }
     }
 

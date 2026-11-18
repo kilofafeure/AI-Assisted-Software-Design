@@ -30,21 +30,21 @@ La solución `Responsibilities/Tasks.slnx` separa el dominio, los casos de uso y
 
 | Proyecto | Responsabilidad |
 | --- | --- |
-| `Domain` | Define `TaskItem` con `Guid Id`, `string Name`, `bool Status`, `string Data` y `TaskType Type`. Los setters validan que `Id` no sea `Guid.Empty`, que `Name` y `Data` no estén vacíos, que `Name` no supere los 50 caracteres y que `Type` sea un valor definido. Actualmente `TaskType` solo contiene `HTTP`. |
-| `ApplicationLayer` | Define `ISave.Save(TaskItem)`, `IGet.Get()` e `IQueue.EnqueueAsync(TaskItem)`, todos con contratos basados en `Task`, además de los casos de uso `SaveUseCase` y `GetUseCase`. |
-| `Data` | Implementa `ISave` e `IGet` en `ItemMemoryRepository`, que guarda tareas en una lista en memoria y devuelve una copia de la lista al consultar. |
-| `ProcessQueue` | Implementa `IQueue` en `TaskProcessQueue`. Para `TaskType.HTTP`, realiza una solicitud GET a la URL absoluta HTTP/HTTPS indicada en `TaskItem.Data` e imprime el código de estado recibido; los tipos no compatibles producen `NotSupportedException`. |
+| `Domain` | Define `TaskItem` con `Guid Id`, `string Name`, `bool Status`, `string Data` y `TaskType Type`. Los setters validan que `Id` no sea `Guid.Empty`, que `Name` no esté vacío y no supere los 50 caracteres, y que `Type` sea un valor definido. `Data` admite cadenas vacías para poder guardar tareas incorrectas; actualmente `TaskType` solo contiene `HTTP`. |
+| `ApplicationLayer` | Define `ISave.Save(TaskItem)`, `IGet.Get()` e `IQueue.EnqueueAsync(TaskItem)`, además de los casos de uso `SaveUseCase` y `GetUseCase`. `IQueue` devuelve `Task<bool>` para indicar si el elemento fue aceptado en la cola. |
+| `Data` | Implementa `ISave` e `IGet` en `ItemMemoryRepository`, que guarda o actualiza tareas por `Id` en una lista en memoria y devuelve una copia de la lista al consultar. |
+| `ProcessQueue` | `TaskProcessQueue` implementa `IQueue` y contiene un `Channel<TaskItem>` acotado. Un consumidor asíncrono procesa en segundo plano los GET HTTP y guarda el resultado de cada tarea. |
 | `ConsoleApp` | Es el punto de composición: registra las implementaciones y los casos de uso mediante inyección de dependencias, y proporciona el menú interactivo. |
 
-`SaveUseCase` guarda primero la tarea y después la envía a la cola; `GetUseCase` delega la consulta a `IGet`. En `ConsoleApp`, `ItemMemoryRepository` se registra como una única instancia compartida por `IGet` e `ISave`, para que las tareas guardadas puedan consultarse durante la ejecución.
+`SaveUseCase` guarda primero la tarea y después la envía a la cola. El resultado de `IQueue` indica aceptación, no el resultado del GET. El consumidor de `TaskProcessQueue` actualiza y vuelve a guardar `Status` cuando termina el procesamiento. Por eso, `Status = false` puede significar que la tarea está pendiente o que falló. `GetUseCase` delega la consulta a `IGet`. En `ConsoleApp`, `ItemMemoryRepository` se registra como una única instancia compartida por `IGet` e `ISave`.
 
 El menú de `ConsoleApp` ofrece estas opciones:
 
-1. Crear una tarea solicitando nombre, datos y estado (`true` o `false`). La aplicación genera el `Guid`, asigna `TaskType.HTTP` y ejecuta `SaveUseCase`, que guarda la tarea y después solicita la URL indicada en `Data` mediante GET.
+1. Crear una tarea solicitando nombre y datos. La aplicación genera el `Guid`, asigna `Status = false` y `TaskType.HTTP`, y encola la tarea para procesarla en segundo plano.
 2. Mostrar las tareas guardadas con su nombre y estado.
 3. Salir.
 
-El repositorio es solo en memoria: las tareas dejan de estar disponibles al cerrar la aplicación.
+El canal tiene capacidad para 100 tareas y espera cuando está lleno. Al cerrar la aplicación, `TaskProcessQueue` completa el canal y espera a que se procesen las tareas pendientes. El canal y el repositorio son solo en memoria: las tareas dejan de estar disponibles al cerrar la aplicación.
 
 ## Prompts
 
