@@ -1,0 +1,2 @@
+1. Crea un proyecto de biblioteca de clases llamado ApplicationLayer y relacionalo a la solución
+2. Borra la clase creada dentro de Domain llamada Class1.cs

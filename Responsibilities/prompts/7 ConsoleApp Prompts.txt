@@ -1,0 +1,3 @@
+1. Crea un proyecto de consola llamado ConsoleApp
+2. En ConsoleApp en el archivo Program inyecta las interfaces de ApplicationLayer con sus implementacinoes: IGet,ISave -> DataMemory, IQueue -> ConsoleQueue. También los casos de uso: GetUseCase, SaveUseCase. Solo realiza la inyeccion de dependencias
+3. Crea un programa de consola que tenga 3 opciones en el proyecto ConsoleApp: 1. Pida la info de TaskItem, el type por defecto ponlo en HTTP, el guid calculalo y envialo al caso de uso. 2. Muestre las tareas y su status. 3. Salir

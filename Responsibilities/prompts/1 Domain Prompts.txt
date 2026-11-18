@@ -1,0 +1,6 @@
+1. Crea una solución de dotnet llamada Tasks y dentro crea una biblioteca de clases llamada Domain dentro de la carpeta Responsibilities
+2. Borra la clase creada dentro de Domain llamada Class1.cs
+3. Crea una entidad llamada TaskItem en Domain que tenga campo Id que sea un Guid, un string Name, un bool Status, un string Data y ponle un Type de tipo enum el cual solo tenga "HTTP"
+4. Pon validaciones a la entidad ya que es parte de la capa de negocio
+5. Quiero que lances excepciones en los setter en vez de utilizar el Validate(), también quiero que el Name tenga una longituda máxima de 50
+6. Para la longitud máxima del name crea una constante

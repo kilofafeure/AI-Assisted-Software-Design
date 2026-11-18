@@ -1,0 +1,4 @@
+1. Crea un proyecto biblioteca de clases llamado Data
+2. Borra la clase creada dentro de Domain llamada Class1.cs
+3. En Data crea una clase llamada ItemMemoryRepository que implemente ISave e IGet y guarde la información en una lista en memoria
+4 No has puesto que los métodos son asíncronos

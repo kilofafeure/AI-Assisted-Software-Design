@@ -1,0 +1,3 @@
+1. Crea una carpeta llamada interface y dentro crea una interface llamada ISave con un método Save que reciba la entidad TaskItem. El método Save debe ser tipo Task para trabajar asíncronamente. Házlo dentro de la biblioteca de clases ApplicationLayer.
+2. Crea una interface llamada IGet con un método Get que obtenga un listado de entidad TaskItem, debe ser asíncrono
+3. Crea una interface llamada IQueue que tenga un método llamado EnqueueAsync que reciba un TaskItem

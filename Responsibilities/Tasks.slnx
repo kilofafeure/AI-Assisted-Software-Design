@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="ApplicationLayer/ApplicationLayer.csproj" />
+  <Project Path="ConsoleApp/ConsoleApp.csproj" />
+  <Project Path="Data/Data.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="ProcessQueue/ProcessQueue.csproj" />
+</Solution>

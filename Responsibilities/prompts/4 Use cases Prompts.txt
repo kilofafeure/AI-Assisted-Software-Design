@@ -1,0 +1,2 @@
+1. En ApplicationLayer crea una clase que representará un caso de uso. La clase llámala SaveUseCase y que tenga un ISave y un IQueue. La ejecución del caso de uso será primero ejecutar el método Save y prosteriormene el método EnqueueAsync. Recibirá las implementaciones por inyección en su constructor. Los casos de uso créalos dentro de una carpeta llamda useCases
+2. Agrega en useCases una clase llamada GetUseCase y que utilice IGet

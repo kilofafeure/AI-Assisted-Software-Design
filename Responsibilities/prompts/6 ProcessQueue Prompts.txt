@@ -1,0 +1,2 @@
+1. Crea un proyecto biblioteca de clases llamado ProcessQueue y borra la clase creada por defecto
+2. Agrega una clase que implemente IQueue, que solo pongo en consola lo que tiene data el itemtask. La clase se debe llamar ConsoleQueue.
