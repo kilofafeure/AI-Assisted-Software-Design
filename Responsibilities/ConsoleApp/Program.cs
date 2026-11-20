@@ -3,12 +3,15 @@ using Data;
 using Domain;
 using Microsoft.Extensions.DependencyInjection;
 using ProcessQueue;
+using ProcessQueue.Strategies;
 
 var services = new ServiceCollection();
 
 services.AddSingleton<ItemMemoryRepository>();
 services.AddSingleton<IGet>(provider => provider.GetRequiredService<ItemMemoryRepository>());
 services.AddSingleton<ISave>(provider => provider.GetRequiredService<ItemMemoryRepository>());
+services.AddSingleton<ITaskStrategy, HttpTaskStrategy>();
+services.AddSingleton<ITaskStrategy, FileTaskStrategy>();
 services.AddSingleton<IQueue, TaskProcessQueue>();
 services.AddTransient<GetUseCase>();
 services.AddTransient<SaveUseCase>();
@@ -46,6 +49,24 @@ while (true)
 
 async Task CreateTaskAsync()
 {
+    Console.WriteLine("Tipo de tarea:");
+    Console.WriteLine("1. HTTP");
+    Console.WriteLine("2. Archivo");
+    Console.Write("Selecciona un tipo: ");
+
+    TaskType? taskType = Console.ReadLine()?.Trim() switch
+    {
+        "1" => TaskType.HTTP,
+        "2" => TaskType.File,
+        _ => null
+    };
+
+    if (taskType is null)
+    {
+        Console.WriteLine("Tipo de tarea no válido.");
+        return;
+    }
+
     Console.Write("Nombre: ");
     var name = Console.ReadLine();
     if (name is null)
@@ -69,7 +90,7 @@ async Task CreateTaskAsync()
             Name = name,
             Status = false,
             Data = data,
-            Type = TaskType.HTTP
+            Type = taskType.Value
         };
     }
     catch (ArgumentException exception)
@@ -95,6 +116,6 @@ async Task ShowTasksAsync()
 
     foreach (var taskItem in taskItems)
     {
-        Console.WriteLine($"Nombre: {taskItem.Name} | Status: {taskItem.Status}");
+        Console.WriteLine($"Nombre: {taskItem.Name} | Data: {taskItem.Data} | Status: {taskItem.Status}");
     }
 }

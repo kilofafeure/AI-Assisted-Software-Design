@@ -6,10 +6,8 @@ namespace ProcessQueue;
 
 public sealed class TaskProcessQueue : IQueue, IAsyncDisposable
 {
-    private static readonly HttpClient _httpClient = new();
-
-    private readonly Channel<TaskItem> _channel =
-        Channel.CreateBounded<TaskItem>(new BoundedChannelOptions(100)
+    private readonly Channel<(TaskItem TaskItem, ITaskStrategy Strategy)> _channel =
+        Channel.CreateBounded<(TaskItem TaskItem, ITaskStrategy Strategy)>(new BoundedChannelOptions(100)
         {
             FullMode = BoundedChannelFullMode.Wait,
             SingleReader = true,
@@ -17,11 +15,14 @@ public sealed class TaskProcessQueue : IQueue, IAsyncDisposable
         });
 
     private readonly ISave _save;
+    private readonly IReadOnlyDictionary<TaskType, ITaskStrategy> _strategies;
     private readonly Task _consumerTask;
 
-    public TaskProcessQueue(ISave save)
+    public TaskProcessQueue(ISave save, IEnumerable<ITaskStrategy> strategies)
     {
         _save = save ?? throw new ArgumentNullException(nameof(save));
+        ArgumentNullException.ThrowIfNull(strategies);
+        _strategies = strategies.ToDictionary(strategy => strategy.Type);
         _consumerTask = ProcessQueueAsync();
     }
 
@@ -29,14 +30,14 @@ public sealed class TaskProcessQueue : IQueue, IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(taskItem);
 
-        if (taskItem.Type != TaskType.HTTP)
+        if (!_strategies.TryGetValue(taskItem.Type, out var strategy))
         {
             throw new NotSupportedException($"Task type '{taskItem.Type}' is not supported.");
         }
 
         try
         {
-            await _channel.Writer.WriteAsync(taskItem);
+            await _channel.Writer.WriteAsync((taskItem, strategy));
             return true;
         }
         catch (ChannelClosedException)
@@ -53,40 +54,10 @@ public sealed class TaskProcessQueue : IQueue, IAsyncDisposable
 
     private async Task ProcessQueueAsync()
     {
-        await foreach (var taskItem in _channel.Reader.ReadAllAsync())
+        await foreach (var queuedTask in _channel.Reader.ReadAllAsync())
         {
-            taskItem.Status = await SendHttpGetAsync(taskItem.Data);
-            await _save.Save(taskItem);
-        }
-    }
-
-    private static async Task<bool> SendHttpGetAsync(string url)
-    {
-        if (!Uri.TryCreate(url, UriKind.Absolute, out var requestUri) ||
-            (requestUri.Scheme != Uri.UriSchemeHttp && requestUri.Scheme != Uri.UriSchemeHttps))
-        {
-            await Console.Error.WriteLineAsync("Data debe contener una URL HTTP o HTTPS absoluta.");
-            return false;
-        }
-
-        try
-        {
-            using var response = await _httpClient.GetAsync(
-                requestUri,
-                HttpCompletionOption.ResponseHeadersRead);
-            await Console.Out.WriteLineAsync(
-                $"Código de estado HTTP: {(int)response.StatusCode} ({response.StatusCode})");
-            return response.IsSuccessStatusCode;
-        }
-        catch (HttpRequestException exception)
-        {
-            await Console.Error.WriteLineAsync($"No se pudo completar la solicitud HTTP: {exception.Message}");
-            return false;
-        }
-        catch (TaskCanceledException exception)
-        {
-            await Console.Error.WriteLineAsync($"La solicitud HTTP excedió el tiempo de espera: {exception.Message}");
-            return false;
+            queuedTask.TaskItem.Status = await queuedTask.Strategy.ExecuteAsync(queuedTask.TaskItem);
+            await _save.Save(queuedTask.TaskItem);
         }
     }
 }
