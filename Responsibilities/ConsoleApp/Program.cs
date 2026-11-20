@@ -12,6 +12,7 @@ services.AddSingleton<IGet>(provider => provider.GetRequiredService<ItemMemoryRe
 services.AddSingleton<ISave>(provider => provider.GetRequiredService<ItemMemoryRepository>());
 services.AddSingleton<ITaskStrategy, HttpTaskStrategy>();
 services.AddSingleton<ITaskStrategy, FileTaskStrategy>();
+services.AddSingleton<ITaskStrategy, ConsoleTaskStrategy>();
 services.AddSingleton<IQueue, TaskProcessQueue>();
 services.AddTransient<GetUseCase>();
 services.AddTransient<SaveUseCase>();
@@ -52,12 +53,14 @@ async Task CreateTaskAsync()
     Console.WriteLine("Tipo de tarea:");
     Console.WriteLine("1. HTTP");
     Console.WriteLine("2. Archivo");
+    Console.WriteLine("3. Consola");
     Console.Write("Selecciona un tipo: ");
 
     TaskType? taskType = Console.ReadLine()?.Trim() switch
     {
         "1" => TaskType.HTTP,
         "2" => TaskType.File,
+        "3" => TaskType.CONSOLE,
         _ => null
     };
 

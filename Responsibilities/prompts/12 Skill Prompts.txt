@@ -1,0 +1,5 @@
+1. Tomando esto como referencia, escribe un skill que pueda reutilizar, llamalo "myapp-strategy", hazlo lo más pequeño que puedas, pero manteniendo la coherencia para reutilizarlo, indica que información necesitaría el skill para funcionar bien, y también una explicación de su uso con un ejemplo.
+
+Uso del skill creado:
+/myapp-strategy el TaskType será "CONSOLE", la acción será imprimir solo en consola lo que hay en Name y Data, llamar la estrategia como ConsoleTaskStrategy
+
